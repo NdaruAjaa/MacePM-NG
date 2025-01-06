@@ -1,5 +1,27 @@
 <?php
 
+/*MIT License
+
+Copyright (c) 2025 Jasson44
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.*/
+
 declare(strict_types=1);
 
 namespace XeonCh\Mace;
@@ -8,19 +30,18 @@ use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\player\PlayerMoveEvent;
 use pocketmine\event\Listener;
 use pocketmine\math\AxisAlignedBB;
-use pocketmine\network\mcpe\protocol\PlaySoundPacket;
-use pocketmine\network\mcpe\protocol\SpawnParticleEffectPacket;
-use pocketmine\network\mcpe\protocol\types\DimensionIds;
+use pocketmine\network\{mcpe\protocol\PlaySoundPacket,
+    mcpe\protocol\SpawnParticleEffectPacket,
+    mcpe\protocol\types\DimensionIds};
 use pocketmine\player\Player;
-use pocketmine\world\sound\FizzSound;
-use pocketmine\world\sound\PopSound;
 use XeonCh\Mace\item\Mace;
 
 class EventListener implements Listener
 {
-    private $playerFallDistance = [];
 
-    public function onPlayerMove(PlayerMoveEvent $event)
+    private array $playerFallDistance = [];
+
+    public function onPlayerMove(PlayerMoveEvent $event): void
     {
         $player = $event->getPlayer();
 
@@ -36,15 +57,15 @@ class EventListener implements Listener
         }
         if ($player->isOnGround()) {
             if (isset($this->playerFallDistance[$player->getName()])) {
-                $fallDistance = $this->playerFallDistance[$player->getName()];
+               /* $fallDistance = $this->playerFallDistance[$player->getName()];
                 if ($fallDistance > 1) {
-                }
+                }*/
                 unset($this->playerFallDistance[$player->getName()]);
             }
         }
     }
 
-    public function MaceLogic(EntityDamageByEntityEvent $event)
+    public function MaceLogic(EntityDamageByEntityEvent $event): void
     {
         $damager = $event->getDamager();
 
@@ -69,8 +90,8 @@ class EventListener implements Listener
                     foreach ($nearbyP as $near) {
                         if ($near instanceof Player) {
                             $near->getNetworkSession()->sendDataPacket(PlaySoundPacket::create("mace.heavy_smash_ground", $x, $y, $z, 1.0, 1.0));
-                            $near->getNetworkSession()->sendDataPacket(SpawnParticleEffectPacket::create(DimensionIds::OVERWORLD, -1, $event->getEntity()->getPosition()->add(0,1,0), "minecraft:smash_ground_particle_center", null));
-                            $near->getNetworkSession()->sendDataPacket(SpawnParticleEffectPacket::create(DimensionIds::OVERWORLD, -1, $event->getEntity()->getPosition()->add(0, 1, 0), "minecraft:smash_ground_particle", null));
+                            $near->getNetworkSession()->sendDataPacket(SpawnParticleEffectPacket::create(DimensionIds::OVERWORLD, -1, $event->getEntity()?->getPosition()->add(0,1,0), "minecraft:smash_ground_particle_center", null));
+                            $near->getNetworkSession()->sendDataPacket(SpawnParticleEffectPacket::create(DimensionIds::OVERWORLD, -1, $event->getEntity()?->getPosition()->add(0, 1, 0), "minecraft:smash_ground_particle", null));
                         }
                     }
                     unset($this->playerFallDistance[$player->getName()]);

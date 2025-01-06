@@ -1,8 +1,31 @@
 <?php
 
+/*MIT License
+
+Copyright (c) 2025 Jasson44
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.*/
+
+declare(strict_types=1);
+
 namespace XeonCh\Mace\entity;
 
-use pocketmine\entity\Entity;
 use pocketmine\entity\Living;
 use pocketmine\entity\projectile\Throwable;
 use pocketmine\event\entity\EntityDamageEvent;
@@ -12,7 +35,6 @@ use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\PlaySoundPacket;
 use pocketmine\network\mcpe\protocol\types\entity\EntityIds;
 use pocketmine\player\Player;
-use pocketmine\world\particle\SnowballPoofParticle;
 use XeonCh\Mace\particle\WindParticle;
 
 class WindCharge extends Throwable
@@ -40,12 +62,10 @@ class WindCharge extends Throwable
         $nearbyEntities = $world->getNearbyEntities($boundingBox);
         foreach ($nearbyEntities as $entity) {
             if ($entity instanceof Living) {
-                if ($entity->getId() === $this->getOwningEntity()?->getId()) {
-                    $this->applyKnockback($entity, 2.5);
-                } else {
+                if ($entity->getId() !== $this->getOwningEntity()?->getId()) {
                     $entity->attack(new EntityDamageEvent($entity, EntityDamageEvent::CAUSE_PROJECTILE, 1));
-                    $this->applyKnockback($entity, 2.5);
                 }
+                $this->applyKnockBack($entity);
             }
         }
         $x = $this->getPosition()->getX();
@@ -60,13 +80,13 @@ class WindCharge extends Throwable
         }
     }
 
-    private function applyKnockback(Living $entity, float $distance): void
+    private function applyKnockBack(Living $entity): void
     {
         $direction = $entity->getPosition()->subtractVector($this->location);
         $direction->x = 0;
         $direction->z = 0;
-        $knockbackVector = $direction->normalize()->multiply($distance)->addVector(new Vector3(0, 1, 0));
+        $knockBackVector = $direction->normalize()->multiply(2.5)->addVector(new Vector3(0, 1, 0));
 
-        $entity->setMotion($knockbackVector);
+        $entity->setMotion($knockBackVector);
     }
 }
