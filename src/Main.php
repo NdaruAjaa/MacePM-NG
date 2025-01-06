@@ -66,8 +66,8 @@ class Main extends PluginBase
     {
         $mace = ExtraItems::MACE();
         $wind = ExtraItems::WIND();
-        self::registerSimpleItem(ItemTypeNames::MACE, $mace, ["mace_xeon", "mace_item"]);
-        self::registerSimpleItem(ItemTypeNames::WIND_CHARGE, $wind, ["wind_xeon", "wind", "wind_charge_item"]);
+        self::registerSimpleItem("minecraft:mace", $mace, ["mace_xeon", "mace_item"]);
+        self::registerSimpleItem("minecraft:wind_charge", $wind, ["wind_xeon", "wind", "wind_charge_item"]);
     }
 
     /**

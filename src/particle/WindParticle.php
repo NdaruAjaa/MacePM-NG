@@ -9,9 +9,8 @@ use pocketmine\world\particle\Particle;
 
 class WindParticle implements Particle
 {
-
     public function encode(Vector3 $pos): array
     {
-        return [LevelEventPacket::standardParticle(ParticleIds::WIND_EXPLOSION, 0, $pos)];
+        return [LevelEventPacket::standardParticle(91, 0, $pos)];
     }
 }
