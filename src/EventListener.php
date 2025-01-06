@@ -90,8 +90,8 @@ class EventListener implements Listener
                     foreach ($nearbyP as $near) {
                         if ($near instanceof Player) {
                             $near->getNetworkSession()->sendDataPacket(PlaySoundPacket::create("mace.heavy_smash_ground", $x, $y, $z, 1.0, 1.0));
-                            $near->getNetworkSession()->sendDataPacket(SpawnParticleEffectPacket::create(DimensionIds::OVERWORLD, -1, $event->getEntity()?->getPosition()->add(0,1,0), "minecraft:smash_ground_particle_center", null));
-                            $near->getNetworkSession()->sendDataPacket(SpawnParticleEffectPacket::create(DimensionIds::OVERWORLD, -1, $event->getEntity()?->getPosition()->add(0, 1, 0), "minecraft:smash_ground_particle", null));
+                            $near->getNetworkSession()->sendDataPacket(SpawnParticleEffectPacket::create(DimensionIds::OVERWORLD, -1, $event->getEntity()->getPosition()->add(0,1,0), "minecraft:smash_ground_particle_center", null));
+                            $near->getNetworkSession()->sendDataPacket(SpawnParticleEffectPacket::create(DimensionIds::OVERWORLD, -1, $event->getEntity()->getPosition()->add(0, 1, 0), "minecraft:smash_ground_particle", null));
                         }
                     }
                     unset($this->playerFallDistance[$player->getName()]);
