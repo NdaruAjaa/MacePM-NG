@@ -26,14 +26,16 @@ declare(strict_types=1);
 
 namespace XeonCh\Mace;
 
+use pocketmine\block\Air;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
-use pocketmine\event\player\PlayerMoveEvent;
 use pocketmine\event\Listener;
+use pocketmine\event\player\PlayerMoveEvent;
+use pocketmine\item\StringToItemParser;
 use pocketmine\math\AxisAlignedBB;
-use pocketmine\network\{mcpe\protocol\PlaySoundPacket,
-    mcpe\protocol\SpawnParticleEffectPacket,
-    mcpe\protocol\types\DimensionIds};
+use pocketmine\math\Vector3;
+use pocketmine\network\{mcpe\protocol\PlaySoundPacket};
 use pocketmine\player\Player;
+use pocketmine\world\particle\BlockBreakParticle;
 use XeonCh\Mace\item\Mace;
 
 class EventListener implements Listener
