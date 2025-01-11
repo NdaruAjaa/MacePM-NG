@@ -82,16 +82,45 @@ class EventListener implements Listener
                     }
                     $newDamage = $event->getBaseDamage() + $damage;
                     $event->setBaseDamage($newDamage);
-                    $x = $player->getPosition()->getX();
-                    $y = $player->getPosition()->getY();
-                    $z = $player->getPosition()->getZ();
+                    $impactPos = $event->getEntity()->getPosition();
+                    $x = $impactPos->getX();
+                    $y = $impactPos->getY();
+                    $z = $impactPos->getZ();
 
                     $nearbyP = $player->getWorld()->getNearbyEntities(new AxisAlignedBB($x - 20, $y - 20, $z - 20, $x + 20, $y + 20, $z + 20));
+
+                    $blockUnder = $player->getWorld()->getBlock($impactPos->subtract(0, 1, 0));
+                    $block = ($blockUnder instanceof Air) ? "grass" : $blockUnder->getName();
+
+                    $radiuses = [1, 2, 3];
+                    foreach ($radiuses as $radius) {
+                        for ($angle = 0; $angle < 360; $angle += 15) {
+                            $particleX = $x + ($radius * cos(deg2rad($angle)));
+                            $particleZ = $z + ($radius * sin(deg2rad($angle)));
+
+                            $particleY = $y + 3 + rand(-1, 1);
+
+                            $particlePosition = new Vector3($particleX, $particleY, $particleZ);
+                            $player->getWorld()->addParticle(
+                                $particlePosition,
+                                new BlockBreakParticle(StringToItemParser::getInstance()->parse($block)->getBlock())
+                            );
+
+                            if ($radius > 1) {
+                                $innerRadius = $radius - 0.5;
+                                $particleX = $x + ($innerRadius * cos(deg2rad($angle)));
+                                $particleZ = $z + ($innerRadius * sin(deg2rad($angle)));
+                                $particlePosition = new Vector3($particleX, $particleY, $particleZ);
+                                $player->getWorld()->addParticle(
+                                    $particlePosition,
+                                    new BlockBreakParticle(StringToItemParser::getInstance()->parse($block)->getBlock())
+                                );
+                            }
+                        }
+                    }
                     foreach ($nearbyP as $near) {
                         if ($near instanceof Player) {
                             $near->getNetworkSession()->sendDataPacket(PlaySoundPacket::create("mace.heavy_smash_ground", $x, $y, $z, 1.0, 1.0));
-                            $near->getNetworkSession()->sendDataPacket(SpawnParticleEffectPacket::create(DimensionIds::OVERWORLD, -1, $event->getEntity()->getPosition()->add(0,1,0), "minecraft:smash_ground_particle_center", null));
-                            $near->getNetworkSession()->sendDataPacket(SpawnParticleEffectPacket::create(DimensionIds::OVERWORLD, -1, $event->getEntity()->getPosition()->add(0, 1, 0), "minecraft:smash_ground_particle", null));
                         }
                     }
                     unset($this->playerFallDistance[$player->getName()]);
