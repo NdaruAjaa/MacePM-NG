@@ -38,6 +38,7 @@ use pocketmine\scheduler\AsyncTask;
 use pocketmine\world\format\io\GlobalItemDataHandlers;
 use pocketmine\world\World;
 use XeonCh\Mace\entity\WindCharge;
+use pocketmine\inventory\CreativeInventory;
 
 class Main extends PluginBase
 {
@@ -77,6 +78,11 @@ class Main extends PluginBase
     {
         GlobalItemDataHandlers::getDeserializer()->map($id, fn() => clone $item);
         GlobalItemDataHandlers::getSerializer()->map($item, fn() => new SavedItemData($id));
+
+        if (!CreativeInventory::getInstance()->contains($item)) {           
+           CreativeInventory::getInstance()->add($item);
+        }
+
         foreach ($stringToItemParserNames as $name) {
             StringToItemParser::getInstance()->register($name, fn() => clone $item);
         }
