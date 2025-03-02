@@ -79,7 +79,7 @@ class WindCharge extends Throwable
             new AxisAlignedBB($x - 20, $y - 20, $z - 20, $x + 20, $y + 20, $z + 20)
         );
         
-        if (is_array($nearbyP)) {
+        if (is_array($nearbyP)) { 
             foreach ($nearbyP as $near) {
                 if ($near instanceof Player) {
                     $near->getNetworkSession()->sendDataPacket(
@@ -88,15 +88,17 @@ class WindCharge extends Throwable
                 }
             }
         }
-    ]
+    }
 
     private function applyKnockBack(Living $entity): void
     {
         $direction = $entity->getPosition()->subtractVector($this->location);
         $direction->x = 0;
         $direction->z = 0;
-        $knockBackVector = $direction->normalize()->multiply(2.5)->addVector(new Vector3(0, 1, 0));
 
+        $jumpHeight = ($entity instanceof Player && $entity->isSprinting()) ? 1.5 : 0.5;
+        
+        $knockBackVector = $direction->normalize()->multiply(0.1)->addVector(new Vector3(0, $jumpHeight, 0));
         $entity->setMotion($knockBackVector);
     }
 }
