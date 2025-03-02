@@ -79,7 +79,7 @@ class WindCharge extends Throwable
             new AxisAlignedBB($x - 20, $y - 20, $z - 20, $x + 20, $y + 20, $z + 20)
         );
         
-        if (is_array($nearbyP)) { // Pastikan $nearbyP adalah array sebelum foreach
+        if (is_array($nearbyP)) {
             foreach ($nearbyP as $near) {
                 if ($near instanceof Player) {
                     $near->getNetworkSession()->sendDataPacket(
