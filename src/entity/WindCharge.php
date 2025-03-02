@@ -88,7 +88,7 @@ class WindCharge extends Throwable
                 }
             }
         }
-    }
+    
 
     private function applyKnockBack(Living $entity): void
     {
