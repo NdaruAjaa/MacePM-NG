@@ -50,6 +50,7 @@ class WindCharge extends Throwable
     {
         $world = $this->getWorld();
         $world->addParticle($this->location, new WindParticle());
+        
         $radius = 1.5;
         $boundingBox = new AxisAlignedBB(
             $this->location->x - $radius,
@@ -59,6 +60,7 @@ class WindCharge extends Throwable
             $this->location->y + $radius,
             $this->location->z + $radius
         );
+        
         $nearbyEntities = $world->getNearbyEntities($boundingBox);
         foreach ($nearbyEntities as $entity) {
             if ($entity instanceof Living) {
@@ -68,14 +70,22 @@ class WindCharge extends Throwable
                 $this->applyKnockBack($entity);
             }
         }
+
         $x = $this->getPosition()->getX();
         $y = $this->getPosition()->getY();
         $z = $this->getPosition()->getZ();
 
-        $nearbyP = $this->getOwningEntity()?->getWorld()->getNearbyEntities(new AxisAlignedBB($x - 20, $y - 20, $z - 20, $x + 20, $y + 20, $z + 20));
-        foreach ($nearbyP as $near) {
-            if ($near instanceof Player) {
-                $near->getNetworkSession()->sendDataPacket(PlaySoundPacket::create("wind_charge.burst", $x, $y, $z, 1.0, 1.0));
+        $nearbyP = $this->getOwningEntity()?->getWorld()->getNearbyEntities(
+            new AxisAlignedBB($x - 20, $y - 20, $z - 20, $x + 20, $y + 20, $z + 20)
+        );
+        
+        if (is_array($nearbyP)) { // Pastikan $nearbyP adalah array sebelum foreach
+            foreach ($nearbyP as $near) {
+                if ($near instanceof Player) {
+                    $near->getNetworkSession()->sendDataPacket(
+                        PlaySoundPacket::create("wind_charge.burst", $x, $y, $z, 1.0, 1.0)
+                    );
+                }
             }
         }
     }
