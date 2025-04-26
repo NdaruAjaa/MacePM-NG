@@ -26,30 +26,44 @@ declare(strict_types=1);
 
 namespace XeonCh\Mace;
 
+use pocketmine\data\bedrock\EnchantmentIdMap;
+use pocketmine\data\bedrock\EnchantmentIds;
 use pocketmine\data\bedrock\item\ItemTypeNames;
 use pocketmine\data\bedrock\item\SavedItemData;
 use pocketmine\entity\EntityDataHelper;
 use pocketmine\entity\EntityFactory;
+use pocketmine\item\enchantment\StringToEnchantmentParser;
 use pocketmine\item\Item;
 use pocketmine\item\StringToItemParser;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\plugin\PluginBase;
 use pocketmine\scheduler\AsyncTask;
+use pocketmine\utils\SingletonTrait;
 use pocketmine\world\format\io\GlobalItemDataHandlers;
 use pocketmine\world\World;
+use XeonCh\Mace\enchantments\MaceEnchantmentIds;
 use XeonCh\Mace\entity\WindCharge;
 use pocketmine\inventory\CreativeInventory;
 
 class Main extends PluginBase
 {
 
+    use SingletonTrait;
+
     public function onEnable(): void
     {
+        self::setInstance($this);
         $this->getServer()->getPluginManager()->registerEvents(new EventListener(), $this);
         EntityFactory::getInstance()->register(WindCharge::class, function (World $world, CompoundTag $nbt): WindCharge {
             return new WindCharge(EntityDataHelper::parseLocation($nbt, $world), null, $nbt);
         }, ['wind_charge', 'minecraft:wind_charge_projectile']);
+
         self::registerItems();
+        
+        $this->registerEnchant("breach", 40, MaceEnchantmentIds::BREACH());
+        $this->registerEnchant("density", 39, MaceEnchantmentIds::DENSITY());
+        $this->registerEnchant("wind_burst", 38, MaceEnchantmentIds::WIND_BURST());
+
         $this->getServer()->getAsyncPool()->addWorkerStartHook(function (int $worker): void {
             $this->getServer()->getAsyncPool()->submitTaskToWorker(
                 new class extends AsyncTask
@@ -86,5 +100,13 @@ class Main extends PluginBase
         foreach ($stringToItemParserNames as $name) {
             StringToItemParser::getInstance()->register($name, fn() => clone $item);
         }
+    }
+
+    public function registerEnchant($name, int $saveId, object $enum): void
+    {
+        $enchantIdMap = EnchantmentIdMap::getInstance();
+        $enchantParser = StringToEnchantmentParser::getInstance();
+        $enchantIdMap->register($saveId, $enum);
+        $enchantParser->register($name, fn() => $enum);
     }
 }
